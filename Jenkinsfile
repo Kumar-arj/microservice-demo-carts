@@ -1,4 +1,4 @@
-def label = 'shopagent'
+def label = "shopagent"
 def mvn_version = 'M2'
 podTemplate(label: label, yaml: '''
 apiVersion: v1
