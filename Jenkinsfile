@@ -26,9 +26,7 @@ spec:
 ) {
     node(label) {
         stage('CleanWorkspace') {
-      steps {
-        cleanWs()
-      }
+          cleanWs()
         }
         stage('Checkout SCM') {
           git credentialsId: 'git', url: 'https://github.com/microservices-demo/carts.git', branch: 'master'
