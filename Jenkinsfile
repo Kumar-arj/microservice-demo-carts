@@ -1,4 +1,4 @@
-def label = "shopagent"
+def label = 'shopagent'
 def mvn_version = 'M2'
 podTemplate(label: label, yaml: '''
 apiVersion: v1
@@ -25,6 +25,11 @@ spec:
 '''
 ) {
     node(label) {
+        stage('CleanWorkspace') {
+      steps {
+        cleanWs()
+      }
+        }
         stage('Checkout SCM') {
           git credentialsId: 'git', url: 'https://github.com/microservices-demo/carts.git', branch: 'master'
           container('build') {
@@ -41,7 +46,7 @@ spec:
           container('build') {
         stage('Sonar Scan') {
           withSonarQubeEnv('sonar') {
-            sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=sock-shop_service'
+            sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=sock-shop_service'
           }
         }
           }
