@@ -10,7 +10,7 @@ import works.weave.socks.cart.cart.CartDAO;
 import works.weave.socks.cart.cart.CartResource;
 import works.weave.socks.cart.entities.Cart;
 
-
+@CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE}, allowedHeaders = {"X-Auth-Token", "Content-Type"})
 @RestController
 @RequestMapping(path = "/carts")
 public class CartsController {
