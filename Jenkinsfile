@@ -29,7 +29,7 @@ spec:
           cleanWs()
         }
         stage('Checkout SCM') {
-          git credentialsId: 'git', url: 'https://github.com/microservices-demo/carts.git', branch: 'master'
+          git credentialsId: 'git', url: 'https://github.com/Kumar-arj/microservice-demo-carts.git', branch: 'master'
           container('build') {
         stage('Build a Maven project') {
           //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
