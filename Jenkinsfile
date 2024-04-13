@@ -89,16 +89,21 @@ spec:
           }
     }
 
-    //     stage('Helm Chart') {
-    //       container('build') {
-    //         dir('charts') {
-    //           withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-    //           sh '/usr/local/bin/helm package micro-services-admin'
-    //           sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://k4meos.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
-    //           }
-    //         }
-    //       }
-    //     }
+        stage('Helm Chart') {
+          container('build') {
+            dir('charts') {
+              withCredentials([usernamePassword(credentialsId: 'nexuslogin', usernameVariable: 'username', passwordVariable: 'password')]) {
+            //   sh '/usr/local/bin/helm push micro-services-cart-1.0.tgz http://nexus.k4m.in/repository/sock-shop-helm'
+              sh ''' 
+                BUILD_NUMBER=${BUILD_ID}
+                sed -i 's/version: "1.0"/version: "1.0.0-'${BUILD_NUMBER}'"/' micro-services-cart/Chart.yaml
+              '''
+              sh '/usr/local/bin/helm package micro-services-cart'
+              sh 'curl -v -u $username:$password --upload-file micro-services-cart-1.0.0-$BUILD_NUMBER.tgz http://nexus.k4m.in/repository/sock-shop-helm-local/'
+              }
+            }
+          }
+        }
     }
 }
 }
