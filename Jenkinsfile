@@ -15,13 +15,10 @@ spec:
     command:
     - cat
     tty: true
-    volumeMounts:
-    - name: dockersock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: dockersock
-    hostPath:
-      path: /var/run/docker.sock
+  - name: docker
+    image: docker:24.0.0-rc.1-dind
+    securityContext:
+      privileged: true
 '''
 ) {
     node(label) {
@@ -32,11 +29,7 @@ spec:
           git credentialsId: 'git', url: 'https://github.com/Kumar-arj/microservice-demo-carts.git', branch: 'master'
           container('build') {
         stage('Build a Maven project') {
-          //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
-          //sh "mvn clean package"
-          //  }
           sh 'mvn -DskipTests clean package'
-        //sh 'mvn clean package'
         }
           }
         }
@@ -49,18 +42,8 @@ spec:
         }
           }
         }
-
-    environment {
-        NEXUS_VERSION = 'nexus3'
-        NEXUS_PROTOCOL = 'http'
-        NEXUS_URL = 'http://nexus.k4m.in/'
-        NEXUS_REPOSITORY = 'sock-shop-release-local'
-        NEXUS_REPO_ID    = 'sock-shop-release-local'
-        NEXUS_CREDENTIAL_ID = 'nexuslogin'
-        ARTVERSION = "${env.BUILD_ID}"
-    }
-    stage('Publish to Nexus Repository Manager') {
-      steps {
+    stage('Publish to Nexus Repository Manager') {stage('Publish to Nexus Repository Manager') {
+        withEnv([ 'NEXUS_VERSION=nexus3','NEXUS_PROTOCOL=http','NEXUS_URL=nexus.k4m.in','NEXUS_REPOSITORY=sock-shop-release-local','NEXUS_REPO_ID=sock-shop-release-local','NEXUS_CREDENTIAL_ID=nexuslogin',"ARTVERSION=${env.BUILD_ID}"]){
         script {
           pom = readMavenPom file: 'pom.xml'
           filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
@@ -93,18 +76,18 @@ spec:
             error "*** File: ${artifactPath}, could not be found"
             }
         }
-      }
+        }
     }
-    // stage('Docker Build') {
-    //       container('build') {
-    //     stage('Build Image') {
-    //       docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
-    //         def customImage = docker.build('kumararj/eos-micro-services-admin:latest')
-    //         customImage.push()
-    //       }
-    //     }
-    //       }
-    // }
+    stage('Docker Build') {
+          container('docker') {
+        stage('Build Image') {
+          docker.withRegistry( 'https://registry.hub.docker.com', 'dockerhub' ) {
+            def customImage = docker.build('kumararj/sock-shop-micro-services-cart:latest')
+            customImage.push()
+          }
+        }
+          }
+    }
 
     //     stage('Helm Chart') {
     //       container('build') {
@@ -117,4 +100,5 @@ spec:
     //       }
     //     }
     }
+}
 }
