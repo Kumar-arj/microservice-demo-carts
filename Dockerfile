@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-alpine3.14
+FROM openjdk:8u191-jdk-alpine
 
 WORKDIR /usr/src/app
 COPY ./target/*.jar ./app.jar
