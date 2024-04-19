@@ -20,13 +20,13 @@ spec:
       {{- end }}
     spec:
       containers:
-      - command:
-        - java
-        - -jar
-        - ./app.jar
-        - --port={{ .Values.carts.containerPort }}
-        name: carts
+      - name: carts
         image: {{if .Values.global.registry}}{{ .Values.global.registry }}/{{end}}{{ .Values.carts.image.repo }}:{{ .Values.carts.image.tag }}
+      #  command:
+      #   - java
+      #   - -jar
+      #   - ./app.jar
+      #   - --port={{ .Values.carts.containerPort }}
         env:
          {{- if .Values.zipkin.enabled }}
          - name: ZIPKIN
